@@ -3,7 +3,7 @@ from setuptools import Extension
 
 
 extensions = [
-    Extension("linearity/__init__", ["linearity/__init__.c"])
+    Extension("linearity/__init__", ["linearity/__init__.cpp"]),
 ]
 
 with open("README.md", "r") as f:
