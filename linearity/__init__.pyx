@@ -369,6 +369,7 @@ cpdef axis_of_max_variance(list Y, int dim):
         # axes.append(axis)
         if axis_var > max_var:
             max_var = axis_var
+            idx = j
             max_axis = axis
     return idx, max_axis
 
