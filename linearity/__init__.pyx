@@ -6,8 +6,11 @@
 #cython.boundscheck=False
 #cython.nonecheck=False
 from cpython cimport array
+from cython.view cimport array as cvarray
 cimport cython
 from libcpp.algorithm cimport sort
+from libc.stdlib cimport malloc, free
+from itertools import chain
 import array
 
 
@@ -265,6 +268,25 @@ cdef class vector(object):
             return dot(self - item.position, item.normal)
 
 
+cdef class matrix(object):
+    cdef public array.array value
+    cdef public float[:] v
+    cdef public (Py_ssize_t, Py_ssize_t) shape
+    cdef float *my_array
+
+    def __init__(self, list data):
+        cdef Py_ssize_t rows = len(data)
+        cdef Py_ssize_t cols = len(data[0])
+        self.shape = (rows, cols)
+        cdef Py_ssize_t i
+        cdef Py_ssize_t j
+        my_array = cvarray(shape=(rows, cols), itemsize=sizeof(float), format="f")
+
+        for i in range(rows):
+            for j in range(cols):
+                my_array[i, j] = data[i][j]
+
+
 cdef class hyperplane(object):
     cdef public vector normal
     cdef public vector position
@@ -336,6 +358,7 @@ cpdef vector vector_from_axis(list X, int dim):
 
 cpdef axis_of_max_variance(list Y, int dim):
     cdef vector axis
+    cdef vector max_axis
     cdef float max_var = 0
     cdef float axis_var
     cdef int idx = -1
@@ -343,11 +366,11 @@ cpdef axis_of_max_variance(list Y, int dim):
     for j in range(dim):
         axis = vector_from_axis(Y, j)
         axis_var = axis.var()
-        axes.append(axis)
+        # axes.append(axis)
         if axis_var > max_var:
             max_var = axis_var
-            idx = j
-    return idx, axes[idx]
+            max_axis = axis
+    return idx, max_axis
 
 
 cpdef list approximate_list(list v, tolerance=.1):

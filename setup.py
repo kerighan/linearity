@@ -1,9 +1,10 @@
 import setuptools
+from Cython.Build import cythonize
 from setuptools import Extension
 
 
 extensions = [
-    Extension("linearity/__init__", ["linearity/__init__.cpp"]),
+    Extension("linearity/*", ["linearity/*.pyx"]),
 ]
 
 with open("README.md", "r") as f:
@@ -20,7 +21,7 @@ setuptools.setup(
     url="https://github.com/kerighan/linearity",
     packages=setuptools.find_packages(),
     include_package_data=True,
-    ext_modules=extensions,
+    ext_modules=cythonize(extensions),
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
